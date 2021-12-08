@@ -82,7 +82,7 @@ const start = () => {
 // Render the list song
 const render = () => {
   const htmls = songs.map((song, index) => {
-    return `<div class="song ${index === currentIndex ? "active" : ""} " data-index="${index}">
+    return `<div class="song ${index === currentIndex ? 'active' : ""} " data-index="${index}">
         <div
           class="thumb"
           style="
@@ -226,6 +226,8 @@ const handleEvents = () => {
         audio.play()
       }
     }
+    console.log(currentIndex)
+    render();
   };
 };
 
