@@ -82,7 +82,9 @@ const start = () => {
 // Render the list song
 const render = () => {
   const htmls = songs.map((song, index) => {
-    return `<div class="song ${index === currentIndex ? 'active' : ""} " data-index="${index}">
+    return `<div class="song ${
+      index === currentIndex ? "active" : ""
+    } " data-index="${index}">
         <div
           class="thumb"
           style="
@@ -217,16 +219,16 @@ const handleEvents = () => {
     // console.log(e.target.closest())
     //bấm vào đâu thì hiện ra ở đó
     //trả về cái element -> 1 là chính nó hoặc thẻ cha của nó
-    const songNode = e.target.closest(".song:not(.active)")
+    const songNode = e.target.closest(".song:not(.active)");
     if (songNode) {
       if (!e.target.closest(".option")) {
         // console.log(songNode.dataset.index)
-        currentIndex = songNode.dataset.index
-        loadCurrentSong(currentIndex)
-        audio.play()
+        currentIndex = songNode.dataset.index;
+        loadCurrentSong(currentIndex);
+        audio.play();
       }
     }
-    console.log(currentIndex)
+    console.log(currentIndex);
     render();
   };
 };
