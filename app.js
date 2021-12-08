@@ -2,7 +2,7 @@
 1. Render song
 2. Scroll top
 3. Play/pause/seek
-4. CD rorare
+4. CD rorate
 5. Next/prev
 6. Random
 7. Next/Repeat when ended
@@ -17,12 +17,20 @@ const playList = $(".playlist");
 const playBtn = $(".btn-toggle-play");
 const player = $(".player");
 const cd = $(".cd");
-let currentIndex = 0;
-let isPlaying = false;
 const progress = $("#progress");
 const heading = $("header h2");
 const cdThumb = $(".cd-thumb");
 const audio = $("#audio");
+const nextBtn = $(".btn-next");
+const prevBtn = $(".btn-prev");
+const randomBtn = $(".btn-random");
+const repeatBtn = $(".btn-repeat");
+
+//Flag
+let currentIndex = 0;
+let isPlaying = false;
+let isRandom = false;
+let isRepeat = false;
 const songs = [
   {
     name: "Cứ Chill Thôi",
@@ -73,8 +81,8 @@ const start = () => {
 
 // Render the list song
 const render = () => {
-  const htmls = songs.map((song) => {
-    return `<div class="song">
+  const htmls = songs.map((song, index) => {
+    return `<div class="song ${index === currentIndex ? "active" : ""} " data-index="${index}">
         <div
           class="thumb"
           style="
@@ -103,7 +111,7 @@ const handleEvents = () => {
     duration: 10000,
     iterations: Infinity,
   });
-    cdThumbAnimate.pause();
+  cdThumbAnimate.pause();
 
   //Xử lý phóng to hoặc thu nhỏ
   window.onscroll = () => {
@@ -159,6 +167,66 @@ const handleEvents = () => {
     const seekTime = (audio.duration / 100) * e.target.value;
     audio.currentTime = seekTime;
   };
+  //khi next bài hát
+  nextBtn.onclick = () => {
+    if (isRandom) {
+      playRandomSong();
+    } else {
+      nextSong();
+    }
+    audio.play();
+    render();
+    scrollToActiveSong();
+  };
+  prevBtn.onclick = () => {
+    if (isRandom) {
+      playRandomSong();
+    } else {
+      prevSong();
+    }
+    audio.play();
+    render();
+    scrollToActiveSong();
+  };
+
+  //khi random bài hát bật tắt
+  randomBtn.onclick = (e) => {
+    //API toggle
+    isRandom = !isRandom;
+    randomBtn.classList.toggle("active", isRandom);
+  };
+
+  //Xử lí khi bài hát kết thúc
+  audio.onended = () => {
+    //tự bấm click
+    if (isRepeat) {
+      audio.play();
+    } else {
+      nextBtn.click();
+    }
+  };
+
+  //Xử lí repeat
+  repeatBtn.onclick = () => {
+    isRepeat = !isRepeat;
+    repeatBtn.classList.toggle("active", isRepeat);
+  };
+
+  //Lắng nghe hành vi click vào playList
+  playList.onclick = (e) => {
+    // console.log(e.target.closest())
+    //bấm vào đâu thì hiện ra ở đó
+    //trả về cái element -> 1 là chính nó hoặc thẻ cha của nó
+    const songNode = e.target.closest(".song:not(.active)")
+    if (songNode) {
+      if (!e.target.closest(".option")) {
+        // console.log(songNode.dataset.index)
+        currentIndex = songNode.dataset.index
+        loadCurrentSong(currentIndex)
+        audio.play()
+      }
+    }
+  };
 };
 
 // const getCurrentSong = (currentIndex)=>{
@@ -170,6 +238,41 @@ const loadCurrentSong = (currentIndex) => {
   cdThumb.style.backgroundImage = `url(${songs[currentIndex].image})`;
   audio.src = songs[currentIndex].path;
   //   console.log(heading, cdThumb, audio);
+};
+
+const nextSong = () => {
+  currentIndex++;
+  if (currentIndex >= songs.length) {
+    currentIndex = 0;
+  }
+  loadCurrentSong(currentIndex);
+};
+
+const prevSong = () => {
+  currentIndex--;
+  if (currentIndex < 0) {
+    currentIndex = songs.length - 1;
+  }
+  loadCurrentSong(currentIndex);
+};
+
+const playRandomSong = () => {
+  let newIndex;
+  //tránh lặp về bài hát cũ
+  do {
+    newIndex = Math.floor(Math.random() * songs.length);
+  } while (newIndex === currentIndex);
+  currentIndex = newIndex;
+  loadCurrentSong(currentIndex);
+};
+
+const scrollToActiveSong = () => {
+  setTimeout(() => {
+    $(".song.active").scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }, 500);
 };
 
 start();
