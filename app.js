@@ -99,11 +99,11 @@ const handleEvents = () => {
 
   //Xử lý CD quay
   //Animate API
-  const cdThumbAnimate = cdThumb.animate([{tranform: 'rotate(360deg)' }], {
+  const cdThumbAnimate = cdThumb.animate([{ transform: "rotate(360deg)" }], {
     duration: 10000,
     iterations: Infinity,
   });
-//   cdThumbAnimate.pause();
+    cdThumbAnimate.pause();
 
   //Xử lý phóng to hoặc thu nhỏ
   window.onscroll = () => {
